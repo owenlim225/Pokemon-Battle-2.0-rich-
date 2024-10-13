@@ -4,28 +4,32 @@ class PokemonArray:
     def __init__(self) -> None:  
         self.pokemon_Array = [
             # [Name, Health, Power, Poisons, Potions, isUsed]
-            ["Pikachu", 100, 55, 0, 0, False],
-            ["Charmander", 120, 60, 0, 0, False],
-            ["Bulbasaur", 90, 50, 0, 0, False],
-            ["Squirtle", 110, 65, 0, 0, False],
-            ["Jigglypuff", 80, 45, 0, 0, False],
-            ["Eevee", 95, 70, 0, 0, False],
-            ["Snorlax", 150, 100, 0, 0, False],
-            ["Gengar", 85, 75, 0, 0, False],
-            ["Machamp", 130, 80, 0, 0, False],
-            ["Mewtwo", 140, 90, 0, 0, False]
+            ["Pikachu", 0, 0, 0, 0, False],
+            ["Charmander", 0, 0, 0, 0, False],
+            ["Bulbasaur", 0, 0, 0, 0, False],
+            ["Squirtle", 0, 0, 0, 0, False],
+            ["Jigglypuff", 0, 0, 0, 0, False],
+            ["Eevee", 0, 0, 0, 0, False],
+            ["Snorlax", 0, 0, 0, 0, False],
+            ["Gengar", 0, 0, 0, 0, False],
+            ["Machamp", 0, 0, 0, 0, False],
+            ["Mewtwo", 0, 0, 0, 0, False]
         ]
         
-        self.__RandomeValueGenerator()
+        self._randomValGenerator()
 
-    def __RandomeValueGenerator(self) -> None:
+    def _randomValGenerator(self) -> None:
         # Poison and Potion
         for i in range(len(self.pokemon_Array)):
-            randomNum1 = random.randint(1, 6)
-            randomNum2 = random.randint(1, 6)
+            randintHealth = random.randint(50, 100)
+            randitPower = random.randint(50, 150)
+            randintPoison = random.randint(1, 6)
+            randitPotion = random.randint(1, 6)
             
-            self.pokemon_Array[i][3] = randomNum1
-            self.pokemon_Array[i][4] = randomNum2
+            self.pokemon_Array[i][1] = randintHealth
+            self.pokemon_Array[i][2] = randitPower
+            self.pokemon_Array[i][3] = randintPoison
+            self.pokemon_Array[i][4] = randitPotion
             
     @property
     def GetPokemonArray(self) -> list:
