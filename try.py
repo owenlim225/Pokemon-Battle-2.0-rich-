@@ -12,6 +12,7 @@ from rich.panel import Panel
 from rich.align import Align
 from rich.box import ROUNDED
 
+console = Console()
 
 class BattleStatsManager:
     def __init__(self):
@@ -46,17 +47,29 @@ class BattleStatsManager:
         )
 
     def ShowStatsTable(self):
-        if self.player1_wins > self.player2_wins:
-            overall_winner = Text("Player 1", style="green")
-        elif self.player2_wins > self.player1_wins:
-            overall_winner = Text("Player 2", style="red")
-        else:
-            overall_winner = Text("No Overall Winner", style="yellow")
+        table = Table(title="Battle Statistics", box=Table.box.ROUNDED)
+        table.add_column("Battle Number", justify="center")
+        table.add_column("Player 1 Pokémon", justify="center")
+        table.add_column("Player 1 Health", justify="center")
+        table.add_column("Player 1 Power", justify="center")
+        table.add_column("Player 2 Pokémon", justify="center")
+        table.add_column("Player 2 Health", justify="center")
+        table.add_column("Player 2 Power", justify="center")
+        table.add_column("Winner", justify="center")
 
-        self.console.print(f"\n{' ' * 10}[bold magenta]🔥 Pokemon Battle 🔥[/bold magenta]")
-        self.console.print(f"\n{' ' * 10}[bold yellow]Overall Winner: [/bold yellow]{overall_winner}")
-        self.console.print(self.stats_table)
-
+        # Assuming self.stats_manager has a method to retrieve battle stats
+        for battle in self.stats_manager.battles:  # Hypothetical battle history
+            table.add_row(
+                str(battle.number),
+                battle.player1.pokemon.name,
+                str(battle.player1.health),
+                str(battle.player1.power),
+                battle.player2.pokemon.name,
+                str(battle.player2.health),
+                str(battle.player2.power),
+                battle.winner
+            )
+        console.print(table)
 
     @property
     def GetPlayer1_win_count(self) -> int:
@@ -97,43 +110,41 @@ class DisplayManager:
     # Display the title of the program
     def DisplayProgramInfo(self) -> None:
         title_panel = Panel(
-            Align.center("[bold magenta]🔥 Pokemon Battle 🔥[/bold magenta]"),
+            Align.center("[bold magenta]Pokemon Battle System[/bold magenta]"),
             box=ROUNDED,
             style="bold green"
         )
         
         info_panel = Panel(
-            Align.left(
-                "[bold yellow]INFO:[/bold yellow] Select 3-4 pokemon to be used for battle\n"
-                "💉 [green]Potion[/green] is used to increase your Power\n"
-                "💀 [red]Poison[/red] is used to decrease opponents Power\n\n"
-                "⚠ Potion and Poison affects only 1 battle\n"
-                "⚠ New battle resets power to its base power\n"
-                "⚠ Base power changes depending on winner/loser\n\n"
-                "[bold green]🎉 Winner:[/bold green]\n"
-                "[green]Health increases[/green] by 5%\n"
-                "[green]Power increases[/green] by 5%\n\n"
-                "[bold red]💔 Loser:[/bold red]\n"
-                "[red]Health decreases[/red] by 10%\n"
-                "[green]Power increases[/green] by 3%\n\n"
-                "⚠ Every battle, both players' health is reduced by 2% due to fatigue.\n\n"
-                "[yellow]⚠ How To End Battle ⚠[/yellow]\n"
-                "- To end battle, all pokemon for both players must be used."
+            Align.center(
+                "[bold yellow]![/bold yellow] Select 3-4 Pokémon to participate in the battle\n\n"
+                "[green]Potion[/green] enhances your Power     [red]Poison[/red] reduces your opponent's Power\n\n"
+
+                "[bold green]Winner:[/bold green]                         [bold red]Loser:[/bold red]\n"
+                "[green]Health: [/green]+5%                     [red]Health: [/red]-10%\n"
+                "[green]Power: [/green] +5%                     [green]Power:[/green] -3%\n\n"
+
+                "[bold yellow]![/bold yellow] -2% health every battle (fatigue).\n\n"
+
+                "[green]Press Enter to Start[/green]"
+
+
             ),
             box=ROUNDED,
             title="Game Info",
-            title_align="left",
-            style="yellow"
+            title_align="center",
+            style="white"
         )
 
         self.console.print(title_panel)
         self.console.print(info_panel)
 
         # Input prompt with rich styling
-        self.console.input("[green]Press Enter to Start[/green]")
+        self.console.input()
         self.console.clear()
 
     # Display a table of all the available Pokemons for the player to select
+
     def DisplayPokemonSelection(self, pokemon_List) -> None:
         table = Table(title="Pokemon Selection", box=ROUNDED, title_style="bold cyan")
         table.add_column("Index", justify="center")
@@ -153,9 +164,11 @@ class DisplayManager:
                 str(pokemon[4])
             )
 
+        # Center the title and the table
         self.console.print(Panel(Align.center("[bold magenta]🔥 Pokemon Battle 🔥[/bold magenta]"), box=ROUNDED))
-        self.console.print(table)
+        self.console.print(Align.center(table))
         self.console.print()
+
 
     # Display a table of all the selected pokemons of both players
     def DisplayPlayersSelectedPokemons(self, player1, player2, player1_battle_pokemon, player2_battle_pokemon, count, All_pokemon_IsUsed, player1_unused, player2_unused) -> None:
@@ -391,18 +404,13 @@ class GameManager:
     def PokemonArraySelection(self, index) -> bool:
         selected_indexes = []
         items_to_remove = []
-        
-        GREEN = "\033[32m"
-        RED = "\033[31m"
-        YELLOW = "\033[33m"
-        RESET = "\033[0m"
 
         def validate_selection(selected, max_limit):
             if len(selected) == 0:
-                print("No Selected Pokemon. Please Try Again!")
+                console.print("[red]No Pokémon selected. Please try again![/red]")
                 return True
             if len(selected) > max_limit:
-                print(f"Selected Pokemons is more than {max_limit}. Please Try Again!")
+                console.print(f"[red]Selected Pokémon exceeds the limit of {max_limit}. Please try again![/red]")
                 return True
             return False
 
@@ -410,16 +418,43 @@ class GameManager:
             for item in selected:
                 idx = item - 1
                 if idx >= len(self.pokemon_array):
-                    print("Number is Out of Range. Please Try Again!")
+                    console.print("[red]Selection is out of range. Please try again![/red]")
                     return True
                 if idx in selected_indexes:
-                    print("Duplicate Selection. Please Try Again!")
+                    console.print("[red]Duplicate selection. Please try again![/red]")
                     player_array.clear()
                     return True
                 selected_indexes.append(idx)
                 player_array.append(self.pokemon_array[idx])
                 items_to_remove.append(idx)
             return False
+
+        try:
+            if index == 0:
+                console.print(f"[yellow]INFO:[/yellow] Select 3-4 Pokémon for battle (e.g., 1 2 3 4)")
+                self.player_1_index = list(map(int, input("Player 1, select your Pokémon: ").split()))
+                if validate_selection(self.player_1_index, 4):
+                    return True
+                if process_selection(self.player_1_index, self.player_1_array):
+                    return True
+            else:
+                console.print(f"[yellow]INFO:[/yellow] Select the same number of Pokémon as Player 1.")
+                self.player_2_index = list(map(int, input("Player 2, select your Pokémon: ").split()))
+                if validate_selection(self.player_2_index, len(self.player_1_index)):
+                    return True
+                if len(self.player_2_index) < len(self.player_1_index):
+                    console.print(f"[red]Player 2 selected fewer Pokémon than Player 1. Please try again![/red]")
+                    return True
+                if process_selection(self.player_2_index, self.player_2_array):
+                    return True
+
+        except ValueError:
+            console.print("[red]Invalid input. Please enter numbers only![/red]")
+            return True
+
+        for item in sorted(items_to_remove, reverse=True):
+            self.pokemon_array.pop(item)
+        return False
 
         if index == 0:
             print(f"Select a Maximum of 4 Pokemons\n{YELLOW}INFO:{RESET} Select 3-4 Pokemons to use for battle (Ex. Input: 1 2 3 4)\n")
