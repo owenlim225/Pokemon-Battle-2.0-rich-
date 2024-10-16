@@ -181,7 +181,7 @@ class GameManager:
             elif percentage == 0.30: percentage_str = "30%"
             elif percentage == 0.10: percentage_str = "10%" 
             
-            power_increase = int(player[2] * percentage)
+            power_increase = round(player[2] * percentage)
             player[2] += power_increase
             player[4] -= 1  # Decrease potion count
             
@@ -194,7 +194,7 @@ class GameManager:
             elif percentage == 0.30: percentage_str = "30%"
             elif percentage == 0.10: percentage_str = "10%"
             
-            power_decrease = int(opponent[2] * percentage)
+            power_decrease = round(opponent[2] * percentage)
             opponent_newPower = max((opponent[2] - power_decrease), 1)  # Minimum power of 1
             player[3] -= 1  # Decrease poison count
                
@@ -322,11 +322,11 @@ class GameManager:
             self.player_2_selected_Pokemon[2] = self.player_2_previous_power
 
             # Apply the correct changes when Player 1 wins
-            self.player_1_selected_Pokemon[1] += int(self.player_1_previous_health * 0.05)  # Increase Player 1's health by 5%
-            self.player_1_selected_Pokemon[2] += int(self.player_1_previous_power * 0.05)   # Increase Player 1's power by 5%
+            self.player_1_selected_Pokemon[1] += round(self.player_1_previous_health * 0.05)  # Increase Player 1's health by 5%
+            self.player_1_selected_Pokemon[2] += round(self.player_1_previous_power * 0.05)   # Increase Player 1's power by 5%
             
-            self.player_2_selected_Pokemon[1] -= int(self.player_2_previous_health * 0.10)  # Decrease Player 2's health by 10%
-            self.player_2_selected_Pokemon[2] += int(self.player_2_previous_power * 0.03)   # Increase Player 2's power by 3%
+            self.player_2_selected_Pokemon[1] -= round(self.player_2_previous_health * 0.10)  # Decrease Player 2's health by 10%
+            self.player_2_selected_Pokemon[2] += round(self.player_2_previous_power * 0.03)   # Increase Player 2's power by 3%
             
             if self.player_2_selected_Pokemon[1] <= 0:
                 self.player_2_selected_Pokemon[1] = 0
@@ -346,11 +346,11 @@ class GameManager:
             self.player_2_selected_Pokemon[2] = self.player_2_previous_power
 
             # Apply the correct changes when Player 2 wins
-            self.player_2_selected_Pokemon[1] += int(self.player_2_previous_health * 0.05)  # Increase Player 2's health by 5%
-            self.player_2_selected_Pokemon[2] += int(self.player_2_previous_power * 0.05)   # Increase Player 2's power by 5%
+            self.player_2_selected_Pokemon[1] += round(self.player_2_previous_health * 0.05)  # Increase Player 2's health by 5%
+            self.player_2_selected_Pokemon[2] += round(self.player_2_previous_power * 0.05)   # Increase Player 2's power by 5%
             
-            self.player_1_selected_Pokemon[1] -= int(self.player_1_previous_health * 0.10)  # Decrease Player 1's health by 10%
-            self.player_1_selected_Pokemon[2] += int(self.player_1_previous_power * 0.03)   # Increase Player 1's power by 3%
+            self.player_1_selected_Pokemon[1] -= round(self.player_1_previous_health * 0.10)  # Decrease Player 1's health by 10%
+            self.player_1_selected_Pokemon[2] += round(self.player_1_previous_power * 0.03)   # Increase Player 1's power by 3%
             
             if self.player_1_selected_Pokemon[1] <= 0:
                 self.player_1_selected_Pokemon[1] = 0

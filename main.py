@@ -1,7 +1,7 @@
-# Uncomment this import if there is missing modules 
+# # Uncomment this import if there is missing modules 
 
-import packages
-packages.InitializePackages()
+# import packages
+# packages.InitializePackages()
 
 import GameManager as GM
 import DisplayManager as DP
@@ -187,8 +187,10 @@ class Gameplay:
             self.game_Manager.GetBattle_Number
         )
         self.game_Manager.SetBattle_Number = 1
-        
+
         self.game_Manager.BattleWinner()
+
+        # Displaying the winner using the newly added DisplayBattleWinner method
         self.display_Manager.DisplayBattleWinner(
             self.game_Manager.Get_Battle_Winner,
             self.game_Manager.Get_Power_Difference_str,
@@ -196,8 +198,10 @@ class Gameplay:
             self.game_Manager.Player2_win_count,
             self.game_Manager.Tie_count
         )
+
         
     def PostBattleAdjustments(self):
+        # Display battle stats adjustment
         self.display_Manager.DisplayBattleStatsAdjustment(
             self.game_Manager.Get_Battle_Winner,
             self.game_Manager.GetPlayer_1_BattlePokemon,
@@ -207,6 +211,8 @@ class Gameplay:
             self.game_Manager.GetPlayer2_prev_HP,
             self.game_Manager.GetPlayer_2_PreviousPower
         )
+
+        # Apply and display fatigue effects
         self.game_Manager.FatigueEffects()
         self.display_Manager.DisplayFatigueAdjustment(
             self.game_Manager.GetPlayer_1_BattlePokemon,
@@ -214,7 +220,11 @@ class Gameplay:
             self.game_Manager.GetPlayer1_prev_HP,
             self.game_Manager.GetPlayer2_prev_HP
         )
+
+        # Reset values for the next battle
         self.game_Manager.ResetAllValues()
+
+
     
         
 if __name__ == "__main__":

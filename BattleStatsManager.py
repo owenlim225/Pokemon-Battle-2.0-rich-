@@ -1,34 +1,47 @@
-from prettytable import PrettyTable
+from rich.console import Console
+from rich.table import Table
+from rich import box
 
 class BattleStatsManager:
     def __init__(self):
+        self.console = Console()
         self.player1_wins = 0
         self.player2_wins = 0
         self.ties = 0
         
-        self.GREEN = "\033[32m"
-        self.RED = "\033[31m"
-        self.YELLOW = "\033[33m"
-        self.RESET = "\033[0m"
+        self.GREEN = "[green]"
+        self.RED = "[red]"
+        self.YELLOW = "[yellow]"
+        self.RESET = "[/]"
         
-        self.stats_table = PrettyTable()
-        
-        self.stats_table.title = f"{self.YELLOW}Battle Statistic{self.RESET}"
-        self.stats_table.field_names = [
-            "Battle", f"{self.GREEN}Player 1 Pokemon", f"Player 1 Health", f"Player 1 Power{self.RESET}",
-            f"{self.RED}Player 2 Pokemon", f"Player 2 Health", f"Player 2 Power{self.RESET}", "Winner"]
+        # Initialize the rich table
+        self.stats_table = Table(title=f"{self.YELLOW}Battle Statistics{self.RESET}", box=box.MINIMAL_DOUBLE_HEAD)
+        self.stats_table.add_column("Battle", justify="center")
+        self.stats_table.add_column(f"{self.GREEN}Player 1 Pokemon{self.RESET}", justify="center")
+        self.stats_table.add_column(f"{self.GREEN}Player 1 Health{self.RESET}", justify="center")
+        self.stats_table.add_column(f"{self.GREEN}Player 1 Power{self.RESET}", justify="center")
+        self.stats_table.add_column(f"{self.RED}Player 2 Pokemon{self.RESET}", justify="center")
+        self.stats_table.add_column(f"{self.RED}Player 2 Health{self.RESET}", justify="center")
+        self.stats_table.add_column(f"{self.RED}Player 2 Power{self.RESET}", justify="center")
+        self.stats_table.add_column("Winner", justify="center")
                
     def SetValueToStatsTable(self, battle_num, player1, player2, winner):
-        print(winner)
+        win_str = "Tie"
         if winner == f"{self.GREEN}Player 1{self.RESET}":
             win_str = f"{self.GREEN}Player 1{self.RESET}"
         elif winner == f"{self.RED}Player 2{self.RESET}":
-           win_str = f"{self.RED}Player 2{self.RESET}"
-        else:
-            win_str = "Tie"
-            
-        self.stats_table.add_row([battle_num + 1, player1[0], player1[1], player1[2],
-                                  player2[0], player2[1], player2[2], win_str])
+            win_str = f"{self.RED}Player 2{self.RESET}"
+
+        self.stats_table.add_row(
+            str(battle_num + 1),
+            player1[0],  # Player 1 Pokemon
+            str(player1[1]),  # Player 1 Health
+            str(player1[2]),  # Player 1 Power
+            player2[0],  # Player 2 Pokemon
+            str(player2[1]),  # Player 2 Health
+            str(player2[2]),  # Player 2 Power
+            win_str  # Winner
+        )
         
     def ShowStatsTable(self):
         if self.player1_wins > self.player2_wins:
@@ -37,16 +50,17 @@ class BattleStatsManager:
             overall_winner = f"{self.RED}Player 2{self.RESET}"
         else:
             overall_winner = f"{self.YELLOW}No Overall Winner{self.RESET}"
-            
-        print("{:<54}{:<0}".format("", "🔥 Pokemon Battle 🔥\n"))
-        print("{:<42}{:<0}".format("", "🔥 ============ Overall Winner ============ 🔥"))
-        print("{:<60}{:<0}".format("", f"{overall_winner}\n"))
-        print("{:<40}{:<30}{:<30}{:<0}".format(
-            "",
-            f"{self.GREEN}Player 1{self.RESET} Wins: {self.player1_wins}",
-            f"{self.RED}Player 2{self.RESET} Wins: {self.player2_wins}",
-            f"Ties: {self.ties}\n"))
-        print(self.stats_table)  
+        
+        self.console.print(f"{'':<54}🔥 Pokemon Battle 🔥")
+        self.console.print(f"{'':<42}🔥 ============ Overall Winner ============ 🔥")
+        self.console.print(f"{'':<60}{overall_winner}\n")
+        self.console.print(
+            f"{'':<40}{self.GREEN}Player 1{self.RESET} Wins: {self.player1_wins}  "
+            f"{self.RED}Player 2{self.RESET} Wins: {self.player2_wins}  "
+            f"Ties: {self.ties}\n"
+        )
+        self.console.print(self.stats_table)
+        
     @property
     def GetPlayer1_win_count(self) -> int:
         return self.player1_wins
